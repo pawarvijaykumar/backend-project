@@ -1,0 +1,16 @@
+/.vscode---->Ignore VS Code settings.
+/node_modules-->Ignore all installed npm packages.
+./dist---->Ignore compiled/build output.
+node_modules
+.vscode
+dist--->Ignore compiled/build output.
+build--->Ignore production build files.
+coverage--->Ignore test coverage reports.
+
+package-lock.json
+yarn.lock---->Don't format Yarn's lock file.
+pnpm-lock.yaml-->Don't format pnpm's lock file.
+
+*.env
+.env---->Ignore your environment variables.
+.env.*---->Ignore .env.local, .env.production, etc.
