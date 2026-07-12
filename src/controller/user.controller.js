@@ -228,5 +228,36 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     }
 
 })
-    
+
+const updateAccountDetails=asyncHandler(async(req,res)=>{
+    const {fullname,email,sirname}=req,body
+     
+    if(!fullname||email||sirname){//
+        throw new ApiError(400,"failed the update channel name")
+    }
+    const user=User.findByIdAndUpdate(
+        req,user?._od,
+        {
+            $set:{
+                fulaname,
+                email:email
+
+            }
+        },
+        {new:true}
+
+
+    ).select("-password ")//say the password is wrong
+    return res.status
+//means changes name for channelId   or image update
+});
+
+const updateUserAvatar=asyncHandler(async(req,res)=>{
+    const avatarLocationPath=req.file?.path
+    if(avatarLocationPath){
+        throw new ApiError(400,"Avatar files is missing")
+    }
+    const avatar =await uploadCloudenary//so is upoloaded the fil e 
+    (avatarLocationPath})
+})
     
