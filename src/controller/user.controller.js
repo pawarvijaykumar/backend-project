@@ -231,7 +231,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 })
 
 const updateAccountDetails=asyncHandler(async(req,res)=>{
-    const {fullname,email,sirname}=req,body
+    const {fullname,email,sirname}=req.body
      
     if(!fullname||email||sirname){//
         throw new ApiError(400,"failed the update channel name")
@@ -285,15 +285,15 @@ const updateUserAvatar=asyncHandler(async(req,res)=>{
     )
 })
 
-const getUseerChannelProfile=asyncHandler(async(req,res)=>{
-    const {username}=req,param
+const getUserChannelProfile=asyncHandler(async(req,res)=>{
+    const { username }=req.params
     if(!username?.trim()){
         throw new ApiError(400,"username is missing")
     }
-    const channel1 =await  user.aggregate([
+    const channell =await  user.aggregate([
         {
-            $switch:{//menas filter
-                username:username?.tolowerCase()
+            $match:{//menas filter
+                username:username?.toLowerCase()
             }
 
 
@@ -301,16 +301,16 @@ const getUseerChannelProfile=asyncHandler(async(req,res)=>{
         {
             $lookup:{//means the count our sub
                 from:"subscription",//who is subscriber me ?
-                localfield:"_id",
-                foreignfield:"channel",//our channel
+                localField:"_id",
+                foreignField:"channel",//our channel
                 as:"subscriber"//whom have i subscribed
             }
         },
         {
             $lookup:{
                 from:"subscription",//who is subscriber me ?
-                localfield:"_id",
-                foreignfield:"channel",//our channel
+                localField:"_id",
+                foreignField:"channel",//our channel
             }
 
         },
@@ -425,11 +425,11 @@ export {
     loginUser,
     logoutUser,
     refreshAccessToken,
-    changeCurrentPassword,
-    getCurrentUser,
+    //changeCurrentPassword,
+    //getCurrentUser,
     updateAccountDetails,
     updateUserAvatar,
-    updateUserCoverImage,
+    //updateUserCoverImage,
     getUserChannelProfile,
     getWatchHistory
 }

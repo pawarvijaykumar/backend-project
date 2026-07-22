@@ -4,15 +4,16 @@ import { DB_NAME } from "../constants.js";
 
 const connectDB = async () => {
     try {
-        console.log(process.env.MONGODB_URI.replace(/:(.*?)@/, ":******@"));
-        
+        console.log("URI:", process.env.MONGODB_URI);
 
-        const connectionInstance = await mongoose.connect(`${process.env.MONGODB_URI}/${DB_NAME}`)
-        console.log(`\n MongoDB connected !! DB HOST: ${connectionInstance.connection.host}`);
+        const connection = await mongoose.connect(process.env.MONGODB_URI);
+
+        console.log("✅ Connected");
+        console.log(connection.connection.host);
+
     } catch (error) {
-        console.log("MONGODB connection FAILED ", error);
-        process.exit(1)
+        console.log(error);
     }
-}
+};
 
 export default connectDB
