@@ -12,3 +12,11 @@ const subscriptionSchema=new Schemaa({
 
 
 })
+
+
+/*summery -->subscriber → Who clicked Subscribe?
+channel → Whom did they subscribe to?
+ObjectId → Stores the user's unique ID.
+ref: "User" → Links that ID to the User model.
+populate() → Replaces IDs with full user information.
+A separate Subscription collection keeps the database organized and scalable. */

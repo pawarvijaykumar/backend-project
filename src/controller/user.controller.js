@@ -5,6 +5,7 @@ import {uploadOnCloudinary} from "../utils/cloudinary.js"
 import { ApiResponse } from "../utils/ApiResponse.js";
 import jwt from "jsonwebtoken"
 import mongoose from "mongoose";
+import { hasSubscribers } from "diagnostics_channel";
 
 
 const generateAccessAndRefereshTokens = async(userId) =>{
@@ -257,7 +258,101 @@ const updateUserAvatar=asyncHandler(async(req,res)=>{
     if(avatarLocationPath){
         throw new ApiError(400,"Avatar files is missing")
     }
-    const avatar =await uploadCloudenary//so is upoloaded the fil e 
-    (avatarLocationPath})
-})
     
+    const coverImage = await uploadOnCloudinary(coverImageLocalPath)
+
+    if (!coverImage.url) {
+        throw new ApiError(400, "Error while uploading on avatar")
+        
+    }
+
+    const user = await User.findByIdAndUpdate(
+        req.user?._id,
+        {
+            $set:{
+                coverImage: coverImage.url
+            }
+        },
+        {new: true}
+    ).select("-password")
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(200, user, "Cover image updated successfully")
+    )
+})
+
+const getUseerChannelProfile=asyncHandler(async(req,res)=>{
+    const {username}=req,param
+    if(!username?.trim()){
+        throw new ApiError(400,"username is missing")
+    }
+    const channel1 =await  user.aggregate([
+        {
+            $switch:{//menas filter
+                username:username?.tolowerCase()
+            }
+
+
+        },{
+            $lookup:{//means the count our sub
+                from:"subscription",//who is subscriber me ?
+                localfield:"_id",
+                foreignfield:"channel",//our channel
+                as:"subscriber"//whom have i subscribed
+            }
+        },
+        {
+            $lookup:{
+                from:"subscription",//who is subscriber me ?
+                localfield:"_id",
+                foreignfield:"channel",//our channel
+            
+
+        },
+        {
+            $addField:{
+                SubscribersCount:{
+                    $size:"subscribers"//who is u sub
+                },
+                SubscribersCount:{
+                    $size:"subscribersTo"//whom u sub 
+                },
+                issubscribed:{
+                    $cond:{
+                        //notification condition
+                        if:{$in:[req.user?._id,"$subscriber.subscriber"]},
+
+                    then:false,
+                    else:true
+
+
+                }
+
+            }
+
+        }
+        {
+          $project:{//its give the selected the object like name age and amrks
+            fullnamer:1,
+            useename:1,
+            SubscribersCount:1,
+            channelsSubsribedToCount:1,
+            isSubscribed:1,
+            avatar:1,
+            coverImage:1,
+            email:1
+
+
+
+          }  
+        }
+
+    ]
+
+    )
+}
+
+
+
