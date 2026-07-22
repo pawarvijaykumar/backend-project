@@ -111,7 +111,7 @@ const loginUser = asyncHandler(async (req, res) =>{
     const {email, username, password} = req.body
     console.log(email);
 
-    if (!username && !email) {
+    if (!username) {
         throw new ApiError(400, "username or email is required")
     }
     
@@ -249,9 +249,11 @@ const updateAccountDetails=asyncHandler(async(req,res)=>{
 
 
     ).select("-password ")//say the password is wrong
-    return res.status
-//means changes name for channelId   or image update
+    .status(200)
+    .json(new ApiResponse(200, user, "Account details updated successfully"))
+    //means changes name for channelId   or image update
 });
+    
 
 const updateUserAvatar=asyncHandler(async(req,res)=>{
     const avatarLocationPath=req.file?.path
@@ -295,7 +297,8 @@ const getUseerChannelProfile=asyncHandler(async(req,res)=>{
             }
 
 
-        },{
+        },
+        {
             $lookup:{//means the count our sub
                 from:"subscription",//who is subscriber me ?
                 localfield:"_id",
@@ -308,7 +311,7 @@ const getUseerChannelProfile=asyncHandler(async(req,res)=>{
                 from:"subscription",//who is subscriber me ?
                 localfield:"_id",
                 foreignfield:"channel",//our channel
-            
+            }
 
         },
         {
@@ -324,15 +327,16 @@ const getUseerChannelProfile=asyncHandler(async(req,res)=>{
                         //notification condition
                         if:{$in:[req.user?._id,"$subscriber.subscriber"]},
 
-                    then:false,
-                    else:true
+                        then:false,
+                        else:true
+                    }
 
 
                 }
 
             }
 
-        }
+        },
         {
           $project:{//its give the selected the object like name age and amrks
             fullnamer:1,
@@ -349,10 +353,86 @@ const getUseerChannelProfile=asyncHandler(async(req,res)=>{
           }  
         }
 
-    ]
+    ])
+    if (!channel?.length) {
+        throw new ApiError(404, "channel does not exists")
+    }
 
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(200, channel[0], "User channel fetched successfully")
     )
+})
+
+const getWatchHistory = asyncHandler(async(req, res) => {
+    const user = await User.aggregate([
+        {
+            $match: {
+                _id: new mongoose.Types.ObjectId(req.user._id)
+            }
+        },
+        {
+            $lookup: {
+                from: "videos",
+                localField: "watchHistory",
+                foreignField: "_id",
+                as: "watchHistory",
+                pipeline: [
+                    {
+                        $lookup: {
+                            from: "users",
+                            localField: "owner",
+                            foreignField: "_id",
+                            as: "owner",
+                            pipeline: [
+                                {
+                                    $project: {
+                                        fullName: 1,
+                                        username: 1,
+                                        avatar: 1
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        $addFields:{
+                            owner:{
+                                $first: "$owner"
+                            }
+                        }
+                    }
+                ]
+            }
+        }
+    ])
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            user[0].watchHistory,
+            "Watch history fetched successfully"
+        )
+    )
+})
+
+
+export {
+    registerUser,
+    loginUser,
+    logoutUser,
+    refreshAccessToken,
+    changeCurrentPassword,
+    getCurrentUser,
+    updateAccountDetails,
+    updateUserAvatar,
+    updateUserCoverImage,
+    getUserChannelProfile,
+    getWatchHistory
 }
 
 
-
+    
