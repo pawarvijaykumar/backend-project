@@ -11,13 +11,14 @@ import {
     getUserChannelProfile, 
     getWatchHistory, 
     updateAccountDetails
-} from "../controller/user.controller.js";
+} 
+from "../controller/user.controller.js";
 import {upload} from "../middleware/multer.middleware.js";
 import { verifyJWT } from "../middleware/auth.middleware.js";
-router.patch("/cover-image", updateUserCoverImage);
-
-
 const router = Router()
+
+
+
 
 router.route("/register").post(
     upload.fields([

@@ -1,17 +1,26 @@
-import mongoose,{Schema} from "mangoose"
-const subscriptionSchema=new Schemaa({
-  subscriber:{
-    type:Schema.Tyeps.ObjectId,//whob is the subscriber
-    ref:"User"
-  },
+import mongoose, { Schema } from "mongoose";
 
-   channel:{
-    type:Schema.Tyeps.ObjectId,//whob is the watch ur channel or subscriber ur channel
-    ref:"User"
-  }
+const subscriptionSchema = new Schema(
+    {
+        subscriber: {
+            type: Schema.Types.ObjectId,
+            ref: "User"
+        },
 
+        channel: {
+            type: Schema.Types.ObjectId,
+            ref: "User"
+        }
+    },
+    {
+        timestamps: true
+    }
+);
 
-})
+export const Subscription = mongoose.model(
+    "Subscription",
+    subscriptionSchema
+);
 
 
 /*summery -->subscriber → Who clicked Subscribe?
